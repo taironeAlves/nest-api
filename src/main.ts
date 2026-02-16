@@ -19,6 +19,7 @@ async function bootstrap() {
 
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,
   });
