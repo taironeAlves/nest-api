@@ -35,17 +35,16 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersService.findByEmail(loginDto.email, true);
+    const user = await this.usersService.findByEmail(loginDto.email, true); // Sem true Gera Execption Geral.
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt
-      .compare(loginDto.password, user.password)
-      .catch(() => {
-        throw new UnauthorizedException('Invalid credentials. Error OP500');
-      });
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials. Error OP501');
