@@ -63,10 +63,11 @@ export class AuthService {
     };
   }
 
-  async generateToken(user: Pick<User, 'id_user' | 'email'>): Promise<string> {
+  async generateToken(user: Pick<User, 'id_user' | 'email' | 'id_permission'>): Promise<string> {
     const payload = {
       sub: user.id_user,
       email: user.email,
+      id_permission: user.id_permission,
     };
 
     return await this.jwtService.signAsync(payload);

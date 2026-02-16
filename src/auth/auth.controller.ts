@@ -4,6 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Public } from './auth.public.decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AdminOnly } from './common/decorators/auth-roles.decorator';
 
 @ApiTags('auth')
 @Controller({ path: 'auth', version: '1' })
@@ -12,6 +13,7 @@ export class AuthController {
 
   @Post('register')
   @ApiBearerAuth('access-token')
+  @AdminOnly()
   async register(@Body() register_dto: RegisterDto) {
     return this.auth_service.register(register_dto);
   }

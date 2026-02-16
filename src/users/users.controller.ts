@@ -16,6 +16,7 @@ import {
   ApiParam,
   ApiOperation,
 } from '@nestjs/swagger';
+import { AdminOnly } from '../auth/common/decorators/auth-roles.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')
@@ -26,6 +27,7 @@ export class UsersControllerV1 {
   @Post()
   @ApiParam({ name: 'createUserDto', type: CreateUserDto })
   @ApiOperation({ summary: 'Create a new user' })
+  @AdminOnly()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }

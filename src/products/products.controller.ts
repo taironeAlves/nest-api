@@ -16,6 +16,7 @@ import {
   ApiParam,
   ApiOperation,
 } from '@nestjs/swagger';
+import { AdminOnly } from 'src/auth/common/decorators/auth-roles.decorator';
 
 @ApiTags('products')
 @ApiBearerAuth('access-token')
@@ -53,6 +54,7 @@ export class ProductsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a product by ID' })
   @ApiParam({ name: 'id', type: String, description: 'The ID of the product' })
+  @AdminOnly()
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
