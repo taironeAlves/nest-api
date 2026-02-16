@@ -15,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findOne({
@@ -51,11 +51,26 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(
+    email: string,
+    selectPassword = false,
+  ): Promise<User | null> {
+    const selectFields: Partial<Record<keyof User, boolean>> = {
+      id_user: true,
+      name: true,
+      email: true,
+      id_permission: true,
+    };
+
+    if (selectPassword) {
+      selectFields.password = true;
+    }
+
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { id_user: true, name: true, email: true, id_permission: true },
+      select: selectFields,
     });
+
     return user;
   }
 
