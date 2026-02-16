@@ -4,13 +4,14 @@ import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async register(registerDto: RegisterDto) {
     const user = await this.usersService.create({
@@ -49,7 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-   const access_token = await this.generateToken(user);
+    const access_token = await this.generateToken(user);
 
     return {
       access_token,
@@ -62,8 +63,12 @@ export class AuthService {
     };
   }
 
-  async generateToken(user: any) {
-    const payload = { sub: user.id_user, email: user.email };
-    return this.jwtService.sign(payload);
+  async generateToken(user: Pick<User, 'id_user' | 'email'>): Promise<string> {
+    const payload = {
+      sub: user.id_user,
+      email: user.email,
+    };
+
+    return await this.jwtService.signAsync(payload);
   }
 }

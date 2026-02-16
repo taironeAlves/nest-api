@@ -14,8 +14,9 @@ import { UsersModule } from '../users/users.module';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'tairone-key-default',
-        signOptions: { expiresIn: '1h' },
+        secret:
+          configService.get<string>('JWT_SECRET') || 'tairone-key-default',
+        signOptions: { expiresIn: '7d' },
       }),
     }),
   ],
