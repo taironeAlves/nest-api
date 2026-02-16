@@ -12,6 +12,7 @@ export class User {
   email: string;
 
   @Column({
+    select: false,
     type: 'text',
     nullable: false,
   })
