@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -8,22 +16,25 @@ import {
   ApiParam,
   ApiOperation,
 } from '@nestjs/swagger';
+import { AdminOnly } from 'src/auth/common/decorators/auth-roles.decorator';
 
 @ApiTags('clients')
 @ApiBearerAuth('access-token')
 @Controller({ path: 'clients', version: '1' })
 export class ClientsController {
-  constructor(private readonly clientsService: ClientsService) {}
+  constructor(private readonly clientsService: ClientsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new client' })
   @ApiParam({ name: 'createClientDto', type: CreateClientDto })
+  @AdminOnly()
   create(@Body() createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all clients' })
+  @AdminOnly()
   findAll() {
     return this.clientsService.findAll();
   }

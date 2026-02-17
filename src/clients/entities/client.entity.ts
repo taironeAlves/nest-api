@@ -6,8 +6,11 @@ export class Client {
   @PrimaryGeneratedColumn()
   id_client: number;
 
-  @OneToMany(() => Order, (order) => order.client)
-  orders: Order[];
+  @Column({ length: 100 })
+  razao_social: string;
+
+  @Column({ length: 14 })
+  cnpj: string;
 
   @Column({ unique: true, length: 100 })
   email: string;
@@ -15,6 +18,9 @@ export class Client {
   @Column({ length: 100 })
   address: string;
 
-  @Column({ length: 20 })
+  @OneToMany(() => Order, (order) => order.client)
+  orders: Order[];
+
+  @Column({ select: false })
   password: string;
 }
