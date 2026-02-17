@@ -30,4 +30,12 @@ export class CreateProductDto {
   @IsArray()
   @IsString({ each: true })
   images?: string[];
+
+  @ApiProperty({
+    example: 100,
+    description: 'The stock quantity of the product',
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  stock: number;
 }

@@ -17,4 +17,8 @@ export class Product {
 
   @Column('simple-array', { nullable: true })
   images: string[];
+
+  @Column('int')
+  stock: number;
+
 }
