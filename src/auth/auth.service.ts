@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { ClientsService } from '../clients/clients.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly clientsService: ClientsService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -21,7 +22,12 @@ export class AuthService {
       id_permission: registerDto.id_permission,
     });
 
-    const access_token = await this.generateToken(user);
+    const access_token = await this.generateToken({
+      id: user.id_user,
+      email: user.email,
+      id_permission: user.id_permission,
+      type: 'user',
+    });
 
     return {
       access_token,
@@ -30,44 +36,88 @@ export class AuthService {
         name: user.name,
         email: user.email,
         id_permission: user.id_permission,
+        type: 'user',
       },
     };
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersService.findByEmail(loginDto.email, true); // Sem true Gera Execption Geral.
+    const user = await this.usersService.findByEmail(loginDto.email, true);
 
-    if (!user) {
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(
+        loginDto.password,
+        user.password,
+      );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials. Error OP501');
+      }
+
+      const access_token = await this.generateToken({
+        id: user.id_user,
+        email: user.email,
+        id_permission: user.id_permission,
+        type: 'user',
+      });
+
+      return {
+        access_token,
+        user: {
+          id: user.id_user,
+          name: user.name,
+          email: user.email,
+          id_permission: user.id_permission,
+          type: 'user',
+        },
+      };
+    }
+
+    const client = await this.clientsService.findByEmail(loginDto.email, true);
+
+    if (!client) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
-      user.password,
+      client.password,
     );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials. Error OP501');
     }
 
-    const access_token = await this.generateToken(user);
+    const access_token = await this.generateToken({
+      id: client.id_client,
+      email: client.email,
+      id_permission: 0,
+      type: 'client',
+    });
 
     return {
       access_token,
       user: {
-        id: user.id_user,
-        name: user.name,
-        email: user.email,
-        id_permission: user.id_permission,
+        id: client.id_client,
+        name: client.razao_social,
+        email: client.email,
+        id_permission: 0,
+        type: 'client',
       },
     };
   }
 
-  async generateToken(user: Pick<User, 'id_user' | 'email' | 'id_permission'>): Promise<string> {
+  async generateToken(data: {
+    id: number;
+    email: string;
+    id_permission: number;
+    type: 'user' | 'client';
+  }): Promise<string> {
     const payload = {
-      sub: user.id_user,
-      email: user.email,
-      id_permission: user.id_permission,
+      sub: data.id,
+      email: data.email,
+      id_permission: data.id_permission,
+      type: data.type,
     };
 
     return await this.jwtService.signAsync(payload);
