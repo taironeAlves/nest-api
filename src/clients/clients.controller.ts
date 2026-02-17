@@ -22,7 +22,7 @@ import { AdminOnly } from 'src/auth/common/decorators/auth-roles.decorator';
 @ApiBearerAuth('access-token')
 @Controller({ path: 'clients', version: '1' })
 export class ClientsController {
-  constructor(private readonly clientsService: ClientsService) { }
+  constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new client' })

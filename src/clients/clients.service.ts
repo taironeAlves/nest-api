@@ -42,7 +42,13 @@ export class ClientsService {
   async findOne(id: number): Promise<Client> {
     const client = await this.clientRepository.findOne({
       where: { id_client: id },
-      select: { id_client: true, razao_social: true, email: true, cnpj: true, address: true },
+      select: {
+        id_client: true,
+        razao_social: true,
+        email: true,
+        cnpj: true,
+        address: true,
+      },
     });
 
     if (!client) {
